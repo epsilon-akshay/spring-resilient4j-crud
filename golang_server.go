@@ -13,5 +13,5 @@ func main() {
 }
 func getRoot(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("got / request\n %+v", r)
-	w.WriteHeader(500)
+	w.WriteHeader(501)
 }

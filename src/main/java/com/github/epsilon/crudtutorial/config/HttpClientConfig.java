@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.github.resilience4j.circuitbreaker.CircuitBreakerConfig.SlidingWindowType.COUNT_BASED;
@@ -49,25 +50,6 @@ public class HttpClientConfig {
         return new Client2(restTemplate, 3);
     }
 
-    @Bean
-    public CircuitBreakerConfigCustomizer externalServiceClient1() {
-        return CircuitBreakerConfigCustomizer
-                .of("client1",
-                        builder -> builder.slidingWindowSize(10)
-                                .slidingWindowType(COUNT_BASED)
-                                .waitDurationInOpenState(Duration.ofSeconds(20))
-                                .minimumNumberOfCalls(5)
-                                .failureRateThreshold(10.0f));
-    }
-    @Bean
-    public CircuitBreakerConfigCustomizer externalServiceClient2() {
-        return CircuitBreakerConfigCustomizer
-                .of("client2",
-                        builder -> builder.slidingWindowSize(5)
-                                .slidingWindowType(COUNT_BASED)
-                                .minimumNumberOfCalls(1)
-                                .failureRateThreshold(1.0f));
-    }
 
     @Bean
     public RestTemplate restTemplate2() {
@@ -94,5 +76,30 @@ public class HttpClientConfig {
                                 .waitDurationInOpenState(Duration.ofSeconds(20))
                                 .minimumNumberOfCalls(5)
                                 .failureRateThreshold(50.0f));
+    }
+
+    @Bean
+    public CircuitBreakerRegistry circuitBreakerRegistry() {
+        CircuitBreakerConfig externalServiceFooConfig = CircuitBreakerConfig.custom()
+                .slidingWindowSize(10)
+                .slidingWindowType(COUNT_BASED)
+                .waitDurationInOpenState(Duration.ofSeconds(5))
+                .minimumNumberOfCalls(5)
+                .failureRateThreshold(50.0f)
+                .build();
+        Map map = new HashMap();
+        map.put("externalServiceFoo31", externalServiceFooConfig);
+        map.put("externalServiceFoo32", externalServiceFooConfig);
+        map.put("externalServiceFoo33", externalServiceFooConfig);
+        map.put("externalServiceFoo34", externalServiceFooConfig);
+        map.put("externalServiceFoo35", externalServiceFooConfig);
+        map.put("externalServiceFoo36", externalServiceFooConfig);
+        map.put("externalServiceFoo37", externalServiceFooConfig);
+        map.put("externalServiceFoo38", externalServiceFooConfig);
+        map.put("externalServiceFoo39", externalServiceFooConfig);
+
+        return CircuitBreakerRegistry.of(
+                map
+        );
     }
 }

@@ -2,13 +2,11 @@ package com.github.epsilon.crudtutorial.controller;
 
 import com.github.epsilon.crudtutorial.exception.BadServerException;
 import com.github.epsilon.crudtutorial.exception.InternalServerException;
-import com.github.epsilon.crudtutorial.http.Client;
-import com.github.epsilon.crudtutorial.http.Client2;
-import com.github.epsilon.crudtutorial.http.ExternalApi;
-import com.github.epsilon.crudtutorial.http.ExternalApi2;
+import com.github.epsilon.crudtutorial.http.*;
 import com.github.epsilon.crudtutorial.model.Employee;
 import com.github.epsilon.crudtutorial.model.JSONRes;
 import com.github.epsilon.crudtutorial.repo.EmployeeRepo;
+import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
@@ -24,12 +22,13 @@ public class EmployeeController {
     private final Client2 clientID2;
 
     @Autowired
-    public EmployeeController(EmployeeRepo empRepo, @Qualifier("clientID1") Client client, @Qualifier("clientID2") Client2 client3, ExternalApi externalApi, ExternalApi2 externalApi2) {
+    public EmployeeController(EmployeeRepo empRepo, @Qualifier("clientID1") Client client, @Qualifier("clientID2") Client2 client3, ExternalApi externalApi, ExternalApi2 externalApi2, ExternalClientCB externalClientCB) {
         this.empRepo = empRepo;
         this.clientID1 = client;
         this.clientID2 = client3;
         this.externalApi = externalApi;
         this.externalApi2 = externalApi2;
+        this.externalClientCB = externalClientCB;
     }
 
     @PostMapping("/employees")
@@ -72,13 +71,21 @@ public class EmployeeController {
 
     private final ExternalApi externalApi;
     private final ExternalApi2 externalApi2;
+    private final ExternalClientCB externalClientCB;
 
     @GetMapping("/foo")
-    public String foo(@RequestParam int id) {
-        if (id == 1) {
-            return externalApi.callExternalApiFoo();
-        } else {
-            return externalApi2.callExternalApiFoo();
+    public String foo(@RequestParam int id, @RequestParam int aggregator) throws BadServerException {
+        try {
+            if (id == 1) {
+                return externalApi.callExternalApiFoo();
+            } else if(id ==2) {
+                return externalApi2.callExternalApiFoo();
+            }else {
+                return externalClientCB.callExternalApiFoo(aggregator);
+            }
+        } catch (CallNotPermittedException c) {
+            throw new BadServerException("lol");
         }
+
     }
 }
