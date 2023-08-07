@@ -5,6 +5,7 @@ import com.github.epsilon.crudtutorial.http.Client2;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.common.circuitbreaker.configuration.CircuitBreakerConfigCustomizer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -79,7 +80,7 @@ public class HttpClientConfig {
     }
 
     @Bean
-    public CircuitBreakerRegistry circuitBreakerRegistry() {
+    public CircuitBreakerRegistry circuitBreakerRegistry(@Value("${client.apiList}") String[] apiCurls) {
         CircuitBreakerConfig externalServiceFooConfig = CircuitBreakerConfig.custom()
                 .slidingWindowSize(10)
                 .slidingWindowType(COUNT_BASED)
@@ -87,17 +88,15 @@ public class HttpClientConfig {
                 .minimumNumberOfCalls(5)
                 .failureRateThreshold(50.0f)
                 .build();
-        Map map = new HashMap();
-        map.put("externalServiceFoo31", externalServiceFooConfig);
-        map.put("externalServiceFoo32", externalServiceFooConfig);
-        map.put("externalServiceFoo33", externalServiceFooConfig);
-        map.put("externalServiceFoo34", externalServiceFooConfig);
-        map.put("externalServiceFoo35", externalServiceFooConfig);
-        map.put("externalServiceFoo36", externalServiceFooConfig);
-        map.put("externalServiceFoo37", externalServiceFooConfig);
-        map.put("externalServiceFoo38", externalServiceFooConfig);
-        map.put("externalServiceFoo39", externalServiceFooConfig);
+        System.out.println("lololo");
+        System.out.println(apiCurls.length);
+        System.out.println(apiCurls[0]);
+        Map<String, CircuitBreakerConfig> map = new HashMap();
 
+        for(var i:apiCurls) {
+            System.out.println(i);
+            map.put(i,externalServiceFooConfig);
+        }
         return CircuitBreakerRegistry.of(
                 map
         );
