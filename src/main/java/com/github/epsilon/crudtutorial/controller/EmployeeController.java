@@ -77,7 +77,7 @@ public class EmployeeController {
     public String foo(@RequestParam int id, @RequestParam int aggregator) throws BadServerException {
         try {
             if (id == 1) {
-                return externalApi.callExternalApiFoo();
+                return externalApi.callExternalApiFoo(id);
             } else if(id ==2) {
                 return externalApi2.callExternalApiFoo();
             }else {

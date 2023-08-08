@@ -16,7 +16,7 @@ public class ExternalApi {
 
 
     @CircuitBreaker(name = "externalServiceFoo", fallbackMethod = "fallback")
-    public String callExternalApiFoo() {
+    public String callExternalApiFoo(int id) {
         return restTemplate2.getForObject("http://localhost:9090", String.class);
     }
 
