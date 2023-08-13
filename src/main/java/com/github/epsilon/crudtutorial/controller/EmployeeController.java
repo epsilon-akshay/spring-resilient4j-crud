@@ -6,6 +6,7 @@ import com.github.epsilon.crudtutorial.http.*;
 import com.github.epsilon.crudtutorial.model.Employee;
 import com.github.epsilon.crudtutorial.model.JSONRes;
 import com.github.epsilon.crudtutorial.repo.EmployeeRepo;
+import com.github.epsilon.crudtutorial.repo.RedisRepo;
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -22,13 +23,14 @@ public class EmployeeController {
     private final Client2 clientID2;
 
     @Autowired
-    public EmployeeController(EmployeeRepo empRepo, @Qualifier("clientID1") Client client, @Qualifier("clientID2") Client2 client3, ExternalApi externalApi, ExternalApi2 externalApi2, ExternalClientCB externalClientCB) {
+    public EmployeeController(EmployeeRepo empRepo, @Qualifier("clientID1") Client client, @Qualifier("clientID2") Client2 client3, ExternalApi externalApi, ExternalApi2 externalApi2, ExternalClientCB externalClientCB, RedisRepo redisRepo) {
         this.empRepo = empRepo;
         this.clientID1 = client;
         this.clientID2 = client3;
         this.externalApi = externalApi;
         this.externalApi2 = externalApi2;
         this.externalClientCB = externalClientCB;
+        this.redisRepo = redisRepo;
     }
 
     @PostMapping("/employees")
@@ -72,6 +74,7 @@ public class EmployeeController {
     private final ExternalApi externalApi;
     private final ExternalApi2 externalApi2;
     private final ExternalClientCB externalClientCB;
+    private final RedisRepo redisRepo;
 
     @GetMapping("/foo")
     public String foo(@RequestParam int id, @RequestParam int aggregator) throws BadServerException {
@@ -80,8 +83,11 @@ public class EmployeeController {
                 return externalApi.callExternalApiFoo(id);
             } else if(id ==2) {
                 return externalApi2.callExternalApiFoo();
-            }else {
+            }else if(id == 3) {
                 return externalClientCB.callExternalApiFoo(aggregator);
+            } else {
+                redisRepo.setStatus("asd","asd");
+                return "Asd";
             }
         } catch (CallNotPermittedException c) {
             throw new BadServerException("lol");

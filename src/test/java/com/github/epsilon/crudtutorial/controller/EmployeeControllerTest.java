@@ -2,7 +2,6 @@ package com.github.epsilon.crudtutorial.controller;
 
 import com.github.epsilon.crudtutorial.exception.BadServerException;
 import com.github.epsilon.crudtutorial.http.ExternalApi;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -35,7 +34,7 @@ public class EmployeeControllerTest {
     @BeforeEach
     void setup() {
         MockitoAnnotations.openMocks(this);
-         controller = new EmployeeController(null,null,null,externalApi, null,null);
+         controller = new EmployeeController(null,null,null,externalApi, null,null, redisRepo);
     }
 
     @Test

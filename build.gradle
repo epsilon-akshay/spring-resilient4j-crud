@@ -40,7 +40,11 @@ dependencies {
     testImplementation "com.github.tomakehurst:wiremock-jre8:2.31.0"
     implementation group: 'io.github.resilience4j', name: 'resilience4j-spring-boot3', version: '2.1.0'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
-
+    implementation ('org.springframework.boot:spring-boot-starter-data-redis') {
+        exclude group: 'io.lettuce.lettuce-core'
+    }
+    implementation 'com.github.houbb:redis-client-jedis:0.0.3'
+    implementation group: 'org.apache.commons', name: 'commons-pool2', version: '2.11.1'
     compileOnly "io.github.resilience4j:resilience4j-spring-boot3:2.1.0"
     compileOnly 'org.springframework.boot:spring-boot-starter-actuator'
     compileOnly 'org.springframework.boot:spring-boot-starter-aop'
